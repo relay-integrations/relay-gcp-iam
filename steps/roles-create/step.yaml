@@ -1,0 +1,101 @@
+apiVersion: integration/v1
+kind: Step
+name: role-create
+version: 1
+summary: Create a custom IAM role in GCP
+
+description: |
+  This step creates a new custom IAM role in gcp in the specified project
+
+build:
+  apiVersion: build/v1
+  kind: Docker
+
+publish:
+  repository: relaysh/gcp-iam-step-role-create
+
+examples:
+- summary: Create a role
+  apiVersion: v1
+  kind: Workflow
+  steps:
+    image: relaysh/gcp-iam-step-role-create
+    spec:
+      google:
+        service_account_info: !Connection { type: gcp, name: my-gcp-account }
+      name: 'BigQueryDataTransffer'
+      description: "Rights to transfer data into project specific tables"
+      permissions:
+      - 'bigquery.datasets.get'
+      - 'bigquery.datasets.getIamPolicy'
+      - 'bigquery.datasets.update'
+      - 'bigquery.jobs.create'
+      - 'bigquery.models.getData'
+      - 'bigquery.models.getMetadata'
+      - 'bigquery.models.list'
+      - 'bigquery.routines.get'
+      - 'bigquery.routines.list'
+      - 'bigquery.tables.export'
+      - 'bigquery.tables.get'
+      - 'bigquery.tables.getData'
+      - 'bigquery.transfers.update'
+      - 'cloudscheduler.jobs.create'
+      - 'cloudscheduler.jobs.run'
+      - 'resourcemanager.projects.get'
+
+schemas:
+  spec:
+    $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    required:
+      - google
+      - name
+      - permissions
+    properties:
+      google:
+        type: object,
+        description: A mapping of GCP account configuration.,
+        properties:
+          service_account_info:
+            type: object,
+            x-relay-connectionType: gcp,
+            description: A Relay Google Cloud Platform (GCP) connection to use,
+              properties:
+                serviceAccountKey:
+                  type: string
+              required:
+              - serviceAccountKey
+          required:
+          - service_account_info
+      name:
+        type: string
+        description: The name of the role
+      title:
+        type: string
+        description: The human-readable title of the role, if different from the name.
+      description:
+        type: string
+        description: The description of the role
+      permissions:
+        type: array
+        description: A list of permissions
+        items:
+          type: string
+ outputs:
+   $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the role
+      title:
+        type: string
+        description: A human-readable title for the role
+      description:
+        type: string
+        description: The roles description
+      permissions:
+        type: array
+        items:
+          type: string
+        description: The permissions assigned by the role

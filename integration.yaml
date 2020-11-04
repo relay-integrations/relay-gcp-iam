@@ -1,15 +1,15 @@
 apiVersion: integration/v1
 kind: Integration
-name: template
+name: gcp-iam
 channel: stable
 version: v20200514
-summary: Integration template
+summary: Google Cloud Platform IAM
 license: Apache-2.0
-homepage: https://github.com/relay-integrations/template
-source: https://github.com/relay-integrations/template
+homepage: https://github.com/relay-integrations/relay-gcp-iam
+source: https://github.com/relay-integrations/relay-gcp-iam
 
 description: |
-  This is a template for creating a Relay Integration repository.
+   Identity and Access Management (IAM) lets you create and manage permissions for Google Cloud resources. IAM unifies access control for Google Cloud services into a single system and presents a consistent set of operations.
 
 owner:
   name: Puppet, Inc.
@@ -17,5 +17,7 @@ owner:
   url: https://puppet.com
 
 tags:
-- template
+- gcp
+- permissions
+- rbac
 - relay integration

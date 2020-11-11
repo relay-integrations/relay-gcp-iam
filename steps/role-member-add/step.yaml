@@ -1,0 +1,82 @@
+apiVersion: integration/v1
+kind: Step
+name: role-member-add
+version: 1
+summary: Add a member to an IAM role in GCP
+
+description: |
+  This step adds a member to an IAM role in gcp in the specified project
+
+build:
+  apiVersion: build/v1
+  kind: Docker
+
+publish:
+  repository: relaysh/gcp-iam-step-role-member-add
+
+examples:
+- summary: Assign role
+  apiVersion: v1
+  kind: Workflow
+  steps:
+  - name: inauguration
+    image: relaysh/gcp-iam-step-role-member-add
+    spec:
+      google:
+        service_account_info: !Connection { type: gcp, name: my-gcp-account }
+      role: 'roles/POTUS'
+      members: ['serviceAccount:fortyfive@usgov.iam.gserviceaccount.com']
+      condition:
+        title: 'Expires_Jan_20_2021'
+        description: 'Expires on January 20, 2021'
+        expression: "request.time < timestamp('2021-01-21T05:00:00.000Z')"
+schemas:
+  spec:
+    $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    required:
+      - google
+      - role
+      - members
+    properties:
+      google:
+        type: object
+        description: A mapping of GCP account configuration.
+        properties:
+          service_account_info:
+            type: object
+            x-relay-connectionType: gcp
+            description: A Relay Google Cloud Platform (GCP) connection to use.
+              properties:
+                serviceAccountKey:
+                  type: string
+              required:
+              - serviceAccountKey
+          required:
+          - service_account_info
+      role:
+        type: string
+        description: The name of the role that is assigned to members. For example, roles/viewer, roles/editor, or roles/owner.
+      members:
+        type: array
+        items:
+          type: string
+        description: The identities requesting access for a Cloud Platform resource.
+      condition:
+        type: object
+        description: The condition that is associated with this binding. For details, please refer to the readme.
+ outputs:
+   $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    properties:
+      role:
+        type: string
+        description: The name of the role that is assigned to members.
+      members:
+        type: array
+        items:
+          type: string
+        description: The identities assigned to this binding.
+      condition:
+        type: object
+        description: The condition that is associated with this binding. For details, please refer to the readme.

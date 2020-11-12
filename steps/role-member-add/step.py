@@ -46,12 +46,12 @@ def get_policy(crm_service, project_id, version=3):
 def set_policy(crm_service, project_id, policy):
     """Sets IAM policy for a project."""
 
-    policy = (
+    policy['version'] = 3
+    return (
         crm_service.projects()
         .setIamPolicy(resource=project_id, body={"policy": policy})
         .execute()
     )
-    return policy
 
 
 def get_client(product, version, credentials):
@@ -98,6 +98,7 @@ def modify_policy_add_role(crm_service, project_id, role, members, condition):
         binding = {
             "role": role,
             "members": members,
+            "condition": condition,
         }
         policy["bindings"].append(binding)
     return set_policy(crm_service, project_id, policy)

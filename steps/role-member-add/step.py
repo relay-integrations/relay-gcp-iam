@@ -131,7 +131,7 @@ if __name__ == "__main__":
 
     credentials = get_credentials(relay.get(D.google.service_account_info))
     project = get_or_default(D.project, credentials.project_id)
-    role = relay.get(D.name)
+    role = relay.get(D.role)
     members = relay.get(D.members)
     condition = get_or_default(D.condition, None)
 

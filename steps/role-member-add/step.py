@@ -150,9 +150,9 @@ if __name__ == "__main__":
     if policy is None:
         print('policy failed update!')
         sys.exit(1)
-    binding = get_binding(policy, role, condition)
     print("Result:")
-    print(binding)
+    print(policy)
+    binding = get_binding(policy, role, condition)
 
     return_keys = [
         "role",

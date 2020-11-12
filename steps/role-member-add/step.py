@@ -56,7 +56,7 @@ def set_policy(crm_service, project_id, policy):
 
 def get_client(product, version, credentials):
     print("Initiating %s client..." % product)
-    return googleapiclient.discovery.build(product, version, credentials=credentials)
+    return googleapiclient.discovery.build(product, version, credentials=credentials, cache_discovery=False)
 
 
 def get_credentials(connection):

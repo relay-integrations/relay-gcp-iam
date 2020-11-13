@@ -130,12 +130,15 @@ def get_or_default(path, default=None):
 if __name__ == "__main__":
     relay = Interface()
 
-    credentials = get_credentials(relay.get(D.google.service_account_info))
-    project = get_or_default(D.project, credentials.project_id)
+    credentials = get_credentials(relay.get(D.google.connection))
+    project = get_or_default(D.google.project, credentials.project_id)
     role = relay.get(D.role)
     members = relay.get(D.members)
     condition = get_or_default(D.condition, None)
 
+    if not project:
+        print("Missing `google.project` parameter on step configuration and no project was found in the connection.")
+        sys.exit(1)
     if not role:
         print("Missing `role` parameter on step configuration.")
         sys.exit(1)
@@ -146,8 +149,8 @@ if __name__ == "__main__":
         members = [members]
 
     client = get_client("cloudresourcemanager", "v1", credentials)
-    policy = modify_policy_add_role(client, credentials.project_id, role, members, condition)
-    # policy = modify_policy_remove_member(client, credentials.project_id, role, members, condition)
+    policy = modify_policy_add_role(client, project, role, members, condition)
+    # policy = modify_policy_remove_member(client, project, role, members, condition)
     if policy is None:
         print('policy failed update!')
         sys.exit(1)

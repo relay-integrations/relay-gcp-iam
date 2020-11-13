@@ -52,11 +52,7 @@ def get_client(product, version, credentials):
     return googleapiclient.discovery.build(product, version, credentials=credentials)
 
 
-def create_role(connection, name, title, description, permissions):
-    credentials = get_credentials(connection)
-    client = get_client('iam', 'v1', credentials).projects().roles()
-
-    project_id = credentials.project_id
+def create_role(client, project, name, title, description, permissions):
     body = {
         'roleId': name,
         'role': {
@@ -67,7 +63,7 @@ def create_role(connection, name, title, description, permissions):
     }
 
     print("Creating role with %s..." % body)
-    result = client.create(parent='projects/%s' % project_id, body=body).execute()
+    result = client.create(parent='projects/%s' % project, body=body).execute()
     print("Result:")
     print(result)
 
@@ -97,7 +93,8 @@ def create_role(connection, name, title, description, permissions):
 if __name__ == "__main__":
     relay = Interface()
 
-    connection = relay.get(D.google.service_account_info)
+    credentials = get_credentials(relay.get(D.google.connection))
+    project = get_or_default(D.google.project, credentials.project_id)
     name = relay.get(D.name)
     title = get_or_default(D.title, name)
     description = get_or_default(D.description, None)
@@ -107,6 +104,9 @@ if __name__ == "__main__":
     if not name:
         print("Missing `name` parameter on step configuration.")
         sys.exit(1)
+    if not project:
+        print("Missing `google.project` parameter on step configuration and no project was found in the connection.")
+        sys.exit(1)
     if not permissions:
         print("Missing `permissions` parameter on step configuration.")
         sys.exit(1)
@@ -114,7 +114,9 @@ if __name__ == "__main__":
         print("Incorrect `permissions` type, must be a list.")
         sys.exit(1)
 
-    role = create_role(connection, name, title, description, permissions)
+    client = get_client('iam', 'v1', credentials).projects().roles()
+
+    role = create_role(client, project, name, title, description, permissions)
     if role is None:
         print('role failed create!')
         sys.exit(1)

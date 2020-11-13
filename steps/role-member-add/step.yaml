@@ -23,7 +23,7 @@ examples:
     image: relaysh/gcp-iam-step-role-member-add
     spec:
       google:
-        service_account_info: !Connection { type: gcp, name: my-gcp-account }
+        connection: !Connection { type: gcp, name: my-gcp-account }
       role: 'roles/POTUS'
       members: ['serviceAccount:fortyfive@usgov.iam.gserviceaccount.com']
       condition:
@@ -41,19 +41,22 @@ schemas:
     properties:
       google:
         type: object
-        description: A mapping of GCP account configuration.
+        description: Information about authenticating to GCP
         properties:
-          service_account_info:
+          connection:
             type: object
             x-relay-connectionType: gcp
-            description: A Relay Google Cloud Platform (GCP) connection to use.
-              properties:
-                serviceAccountKey:
-                  type: string
-              required:
-              - serviceAccountKey
-          required:
-          - service_account_info
+            description: A Relay Google Cloud Platform (GCP) connection to use
+            properties:
+              serviceAccountKey:
+                type: string
+            required:
+            - serviceAccountKey
+          project:
+            type: string
+            description: The target GCP project, if different from the connection's project_id
+        required:
+        - connection
       role:
         type: string
         description: The name of the role that is assigned to members. For example, roles/viewer, roles/editor, or roles/owner.
